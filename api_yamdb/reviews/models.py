@@ -27,13 +27,22 @@ class Category(NameSlugBaseModel):
         verbose_name_plural = 'Категории'
 
 
+class Genre(NameSlugBaseModel):
+
+    class Meta:
+        verbose_name = 'жанр'
+        verbose_name_plural = 'Жанры'
+
+
 class Title(models.Model):
     name = models.CharField(max_length=MAX_LENGTH, verbose_name='Название')
     year = models.IntegerField(validators=[MaxValueValidator(MAX_YEAR),
                                            MinValueValidator(MIN_YEAR)
                                            ])
+    description = models.TextField(blank=True, null=True)
     category = models.ForeignKey(
         Category, on_delete=models.CASCADE, related_name='title')
+    genre = models.ManyToManyField(Genre, through='TitleGenre')
 
     class Meta:
         verbose_name = 'произведение'
@@ -43,9 +52,6 @@ class Title(models.Model):
         return self.name
 
 
-class Genre(NameSlugBaseModel):
-    title = models.ManyToManyField(Title)
-
-    class Meta:
-        verbose_name = 'жанр'
-        verbose_name_plural = 'Жанры'
+class TitleGenre(models.Model):
+    title = models.ForeignKey(Title, on_delete=models.CASCADE)
+    genre = models.ForeignKey(Genre, on_delete=models.CASCADE)
