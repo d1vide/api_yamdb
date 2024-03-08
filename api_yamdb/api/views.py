@@ -1,10 +1,11 @@
 from django.shortcuts import get_object_or_404
-from rest_framework import viewsets
-from rest_framework import mixins
 from rest_framework import filters
+from rest_framework import mixins
+from rest_framework import status
+from rest_framework import viewsets
 from rest_framework.response import Response
-from .serializers import CategorySerializer, TitleSerializer, GenreSerializer, TitleGenreSerializer
-from reviews.models import Category, Title, Genre
+from .serializers import CategorySerializer, GenreSerializer, TitleSerializer
+from reviews.models import Category, Genre, Title
 
 
 class ListCreateDestroyViewSet(mixins.DestroyModelMixin,
@@ -37,3 +38,17 @@ class GenreViewSet(ListCreateDestroyViewSet):
 class TitleViewSet(viewsets.ModelViewSet):
     queryset = Title.objects.all()
     serializer_class = TitleSerializer
+
+    def update(self, request, *args, **kwargs):
+        partial = kwargs.pop('partial', False)
+        if partial:
+            instance = self.get_object()
+            serializer = self.get_serializer(instance,
+                                             data=request.data,
+                                             partial=partial)
+            serializer.is_valid(raise_exception=True)
+            self.perform_update(serializer)
+            return Response(serializer.data)
+        else:
+            return Response(data={"detail": "Method \"PUT\" not allowed."},
+                            status=status.HTTP_405_METHOD_NOT_ALLOWED)
