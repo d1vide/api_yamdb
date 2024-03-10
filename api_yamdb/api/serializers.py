@@ -2,6 +2,45 @@ from rest_framework import serializers
 from django.shortcuts import get_object_or_404
 
 from reviews.models import Category, Comment, Genre, Review, Title, TitleGenre
+from users.models import User
+
+
+class UserSerializer(serializers.ModelSerializer):
+    """Сериализатор модели User."""
+    email = serializers.EmailField(max_length=254, required=True)
+    username = serializers.SlugField(max_length=50, required=True)
+
+    class Meta:
+        fields = (
+            'username', 'email', 'first_name', 'last_name', 'bio', 'role'
+        )
+        model = User
+        read_only_field = ('role',)
+
+    def validate(self, data):
+        email = data.get('email')
+        username = data.get('username')
+        if (not User.objects.filter(email=email).exists()
+                and User.objects.filter(username=username).exists()):
+            raise serializers.ValidationError(
+                'Эта электронная почта уже занята".'
+            )
+        if (User.objects.filter(email=email).exists()
+                and not User.objects.filter(username=username).exists()):
+            raise serializers.ValidationError(
+                'Эта электронная почта уже занята.'
+            )
+        if username == 'me':
+            raise serializers.ValidationError(
+                'Нельзя использовать "me" как имя.'
+            )
+        return data
+
+
+class JWTSerializer(serializers.Serializer):
+    """Сериализатор запроса JWT токена."""
+    username = serializers.CharField(required=True)
+    confirmation_code = serializers.CharField(required=True)
 
 
 class CategorySerializer(serializers.ModelSerializer):
