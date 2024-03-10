@@ -55,3 +55,59 @@ class Title(models.Model):
 class TitleGenre(models.Model):
     title = models.ForeignKey(Title, on_delete=models.CASCADE)
     genre = models.ForeignKey(Genre, on_delete=models.CASCADE)
+
+
+MIN_VALUE_REVIEW = 1
+MAX_VALUE_REVIEW = 10
+MAX_TEXT_LENGTH = 15
+
+
+class Review(models.Model):
+    title = models.ForeignKey(
+        Title,
+        on_delete=models.CASCADE,
+        related_name="reviews",
+    )
+    text = models.TextField("Текст", help_text="Отзыв")
+    author = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        related_name="reviews",
+        verbose_name="Автор",
+    )
+    score = models.SmallIntegerField(
+        verbose_name="Оценка",
+        validators=[MinValueValidator(MIN_VALUE_REVIEW),
+                    MaxValueValidator(MAX_VALUE_REVIEW)],
+    )
+    pub_date = models.DateTimeField("Дата публикации", auto_now_add=True)
+
+    class Meta:
+        verbose_name = 'отзыв'
+        verbose_name_plural = 'Отзывы'
+        constraints = [
+            models.UniqueConstraint(
+                fields=["author", "title"], name="unique_review"
+            )
+        ]
+
+    def __str__(self):
+        return self.text[:MAX_TEXT_LENGTH]
+
+
+class Comment(models.Model):
+    review = models.ForeignKey(
+        Review, on_delete=models.CASCADE, related_name="comments"
+    )
+    text = models.TextField("Текст", help_text="Комментарий")
+    author = models.ForeignKey(
+        User, on_delete=models.CASCADE, related_name="comments"
+    )
+    pub_date = models.DateTimeField("Дата публикации", auto_now_add=True)
+
+    class Meta:
+        verbose_name = 'комментарий'
+        verbose_name_plural = 'Комментарии'
+
+    def __str__(self):
+        return self.text[:15]
