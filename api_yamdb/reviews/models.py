@@ -1,9 +1,14 @@
 from django.db import models
 from django.core.validators import MaxValueValidator, MinValueValidator
 
+from users.models import User
+
 MAX_LENGTH = 256
 MAX_YEAR = 2026
 MIN_YEAR = 0
+MIN_VALUE_REVIEW = 1
+MAX_VALUE_REVIEW = 10
+MAX_TEXT_LENGTH = 15
 
 
 class NameSlugBaseModel(models.Model):
@@ -57,11 +62,6 @@ class TitleGenre(models.Model):
     genre = models.ForeignKey(Genre, on_delete=models.CASCADE)
 
 
-MIN_VALUE_REVIEW = 1
-MAX_VALUE_REVIEW = 10
-MAX_TEXT_LENGTH = 15
-
-
 class Review(models.Model):
     title = models.ForeignKey(
         Title,
@@ -110,4 +110,4 @@ class Comment(models.Model):
         verbose_name_plural = 'Комментарии'
 
     def __str__(self):
-        return self.text[:15]
+        return self.text[:MAX_TEXT_LENGTH]
