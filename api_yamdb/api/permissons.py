@@ -1,4 +1,5 @@
 from rest_framework import permissions
+from rest_framework.permissions import SAFE_METHODS, BasePermission
 
 
 class AuthorAdminModeratorOrReadOnly(permissions.BasePermission):
@@ -19,3 +20,11 @@ class AdminOrReadOnly(permissions.BasePermission):
     def has_permission(self, request, view):
         return (request.method in permissions.SAFE_METHODS
                 or request.user.is_admin)
+
+
+class IsAdmin(BasePermission):
+    """
+    Доступ для администраторов и выше.
+    """
+    def has_permission(self, request, view):
+        return request.user.is_authenticated and request.user.is_admin
