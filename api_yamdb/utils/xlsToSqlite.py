@@ -3,7 +3,8 @@ import csv, sqlite3
 con = sqlite3.connect(r'C:\Dev\api_yamdb\api_yamdb\db.sqlite3')
 cur = con.cursor()
 
-with open('C:/Dev/api_yamdb/api_yamdb/static/data/category.csv', 'r',
+with open(r'..\static\data\category.csv', 'r',
+        #   C:\Dev\api_yamdb\api_yamdb\utils\xlsToSqlite.py
           encoding='utf-8-sig') as file:
     contents = csv.reader(file)
     fields = next(contents)

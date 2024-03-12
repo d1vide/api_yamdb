@@ -2,10 +2,7 @@ from django.conf import settings
 from django.contrib.auth.tokens import default_token_generator
 from django.core.mail import send_mail
 from django.shortcuts import get_object_or_404
-from rest_framework import mixins
-from rest_framework import filters
-from rest_framework import status
-from rest_framework import viewsets
+from rest_framework import filters, mixins, status, viewsets
 from rest_framework.decorators import action, api_view, permission_classes
 from rest_framework.mixins import RetrieveModelMixin
 from rest_framework.permissions import AllowAny, IsAuthenticated
@@ -15,7 +12,9 @@ from rest_framework_simplejwt.tokens import AccessToken
 
 from reviews.models import Category, Genre, Review, Title
 from users.models import User
-from .permissons import AuthorAdminModeratorOrReadOnly, AdminOrReadOnly, IsAdmin
+from .filters import TitleFilter
+from .permissons import (AuthorAdminModeratorOrReadOnly, AdminOrReadOnly,
+                         IsAdmin)
 from .serializers import (CategorySerializer, CommentSerializer,
                           GenreSerializer, JWTSerializer, ReviewSerializer,
                           TitleSerializer, UserSerializer)
@@ -150,6 +149,7 @@ class TitleViewSet(viewsets.ModelViewSet):
     queryset = Title.objects.all()
     serializer_class = TitleSerializer
     permission_classes = (AdminOrReadOnly, )
+    filter_class = TitleFilter
 
     def update(self, request, *args, **kwargs):
         partial = kwargs.pop('partial', False)
