@@ -1,5 +1,4 @@
 from rest_framework import permissions
-from rest_framework.permissions import SAFE_METHODS, BasePermission
 
 
 class AuthorAdminModeratorOrReadOnly(permissions.BasePermission):
@@ -22,7 +21,7 @@ class AdminOrReadOnly(permissions.BasePermission):
                 or (request.user.is_authenticated and request.user.is_admin))
 
 
-class IsAdmin(BasePermission):
+class IsAdmin(permissions.BasePermission):
     """
     Доступ для администраторов и выше.
     """

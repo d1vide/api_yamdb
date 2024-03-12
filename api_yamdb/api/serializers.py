@@ -9,7 +9,7 @@ from users.models import User
 class UserSerializer(serializers.ModelSerializer):
     """Сериализатор модели User."""
     email = serializers.EmailField(max_length=254, required=True)
-    username = serializers.SlugField(max_length=50, required=True)
+    username = serializers.SlugField(max_length=150, required=True)
 
     class Meta:
         fields = (
