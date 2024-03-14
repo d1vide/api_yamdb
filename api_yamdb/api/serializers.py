@@ -1,4 +1,4 @@
-from api_yamdb.settings import MAX_LENGTH_EMAIL, MAX_LENGTH_NAME
+from api_yamdb.settings import MAX_LENGTH_EMAIL, MAX_LENGTH_NAME, ME
 from django.db.models import Avg, IntegerField
 from django.shortcuts import get_object_or_404
 from rest_framework import serializers
@@ -33,7 +33,7 @@ class UserSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError(
                 'Эта электронная почта уже занята.'
             )
-        if username == 'me':
+        if username == ME:
             raise serializers.ValidationError(
                 'Нельзя использовать "me" как имя.'
             )
