@@ -2,7 +2,7 @@ from rest_framework import serializers
 from django.shortcuts import get_object_or_404
 from django.db.models import Avg, IntegerField
 
-from reviews.models import Category, Comment, Genre, Review, Title, TitleGenre
+from reviews.models import Category, Comment, Genre, Review, Title
 from users.models import User
 
 
@@ -56,12 +56,6 @@ class GenreSerializer(serializers.ModelSerializer):
         exclude = ('id',)
 
 
-class TitleGenreSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = TitleGenre
-        exclude = ('id',)
-
-
 class TitleGetSerializer(serializers.ModelSerializer):
     category = CategorySerializer(many=False, read_only=True)
     genre = GenreSerializer(many=True, read_only=True)
@@ -83,7 +77,8 @@ class TitleSerializer(serializers.ModelSerializer):
                                             queryset=Category.objects.all())
     genre = serializers.SlugRelatedField(slug_field='slug',
                                          queryset=Genre.objects.all(),
-                                         many=True)
+                                         many=True,
+                                         allow_null=False, allow_empty=False)
 
     def to_representation(self, instance):
         serializer = TitleGetSerializer(instance)

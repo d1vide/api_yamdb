@@ -9,6 +9,7 @@ from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.status import HTTP_200_OK, HTTP_400_BAD_REQUEST
 from rest_framework_simplejwt.tokens import AccessToken
+
 from reviews.models import Category, Genre, Review, Title
 from users.models import User
 from .filters import TitleFilter
@@ -149,20 +150,7 @@ class TitleViewSet(viewsets.ModelViewSet):
     serializer_class = TitleSerializer
     permission_classes = (AdminOrReadOnly, )
     filter_class = TitleFilter
-
-    def update(self, request, *args, **kwargs):
-        partial = kwargs.pop('partial', False)
-        if partial:
-            instance = self.get_object()
-            serializer = self.get_serializer(instance,
-                                             data=request.data,
-                                             partial=partial)
-            serializer.is_valid(raise_exception=True)
-            self.perform_update(serializer)
-            return Response(serializer.data)
-        else:
-            return Response(data={"detail": "Method \"PUT\" not allowed."},
-                            status=status.HTTP_405_METHOD_NOT_ALLOWED)
+    http_method_names = ('get', 'post', 'patch', 'delete', )
 
 
 class ReviewViewSet(viewsets.ModelViewSet):

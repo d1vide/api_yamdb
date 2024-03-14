@@ -2,13 +2,8 @@ from django.db import models
 from django.core.validators import MaxValueValidator, MinValueValidator
 
 from users.models import User
-
-MAX_LENGTH = 256
-MAX_YEAR = 2026
-MIN_YEAR = 0
-MIN_VALUE_REVIEW = 1
-MAX_VALUE_REVIEW = 10
-MAX_TEXT_LENGTH = 15
+from reviews.constants import (MAX_LENGTH, MAX_TEXT_LENGTH, MAX_VALUE_REVIEW,
+                               MIN_VALUE_REVIEW)
 
 
 class NameSlugBaseModel(models.Model):
@@ -41,25 +36,19 @@ class Genre(NameSlugBaseModel):
 
 class Title(models.Model):
     name = models.CharField(max_length=MAX_LENGTH, verbose_name='Название')
-    year = models.IntegerField(validators=[MaxValueValidator(MAX_YEAR),
-                                           MinValueValidator(MIN_YEAR)
-                                           ])
+    year = models.SmallIntegerField()
     description = models.TextField(blank=True, null=True)
     category = models.ForeignKey(
         Category, on_delete=models.CASCADE, related_name='title')
-    genre = models.ManyToManyField(Genre, through='TitleGenre')
+    genre = models.ManyToManyField(Genre)
 
     class Meta:
+        ordering = ('name',)
         verbose_name = 'произведение'
         verbose_name_plural = 'Произведения'
 
     def __str__(self):
         return self.name
-
-
-class TitleGenre(models.Model):
-    title = models.ForeignKey(Title, on_delete=models.CASCADE)
-    genre = models.ForeignKey(Genre, on_delete=models.CASCADE)
 
 
 class Review(models.Model):
