@@ -1,15 +1,17 @@
-from rest_framework import serializers
-from django.shortcuts import get_object_or_404
+from api_yamdb.settings import MAX_LENGTH_EMAIL, MAX_LENGTH_NAME
 from django.db.models import Avg, IntegerField
-
+from django.shortcuts import get_object_or_404
+from rest_framework import serializers
 from reviews.models import Category, Comment, Genre, Review, Title, TitleGenre
 from users.models import User
 
 
 class UserSerializer(serializers.ModelSerializer):
     """Сериализатор модели User."""
-    email = serializers.EmailField(max_length=254, required=True)
-    username = serializers.SlugField(max_length=150, required=True)
+    email = serializers.EmailField(max_length=MAX_LENGTH_EMAIL, required=True)
+    username = serializers.SlugField(
+        max_length=MAX_LENGTH_NAME, required=True
+    )
 
     class Meta:
         fields = (
