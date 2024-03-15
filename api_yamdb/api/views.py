@@ -159,6 +159,7 @@ class TitleViewSet(viewsets.ModelViewSet):
 class ReviewViewSet(viewsets.ModelViewSet):
     serializer_class = ReviewSerializer
     permission_classes = [AuthorAdminModeratorOrReadOnly]
+    http_method_names = ('get', 'post', 'patch', 'delete',)
 
     def get_queryset(self):
         title = get_object_or_404(Title, id=self.kwargs.get('title_id'))
@@ -168,24 +169,11 @@ class ReviewViewSet(viewsets.ModelViewSet):
         title = get_object_or_404(Title, id=self.kwargs.get('title_id'))
         serializer.save(author=self.request.user, title=title)
 
-    def update(self, request, *args, **kwargs):
-        partial = kwargs.pop('partial', False)
-        if partial:
-            instance = self.get_object()
-            serializer = self.get_serializer(instance,
-                                             data=request.data,
-                                             partial=partial)
-            serializer.is_valid(raise_exception=True)
-            self.perform_update(serializer)
-            return Response(serializer.data)
-        else:
-            return Response(data={"detail": "Method \"PUT\" not allowed."},
-                            status=status.HTTP_405_METHOD_NOT_ALLOWED)
-
 
 class CommentViewSet(viewsets.ModelViewSet):
     serializer_class = CommentSerializer
     permission_classes = [AuthorAdminModeratorOrReadOnly]
+    http_method_names = ('get', 'post', 'patch', 'delete',)
 
     def get_queryset(self):
         review = get_object_or_404(Review, id=self.kwargs.get('review_id'))
@@ -194,17 +182,3 @@ class CommentViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         review = get_object_or_404(Review, id=self.kwargs.get('review_id'))
         serializer.save(author=self.request.user, review=review)
-
-    def update(self, request, *args, **kwargs):
-        partial = kwargs.pop('partial', False)
-        if partial:
-            instance = self.get_object()
-            serializer = self.get_serializer(instance,
-                                             data=request.data,
-                                             partial=partial)
-            serializer.is_valid(raise_exception=True)
-            self.perform_update(serializer)
-            return Response(serializer.data)
-        else:
-            return Response(data={"detail": "Method \"PUT\" not allowed."},
-                            status=status.HTTP_405_METHOD_NOT_ALLOWED)

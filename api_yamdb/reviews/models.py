@@ -50,8 +50,19 @@ class Title(models.Model):
     def __str__(self):
         return self.name
 
+ 
+class ReviewAndCommentsModel(models.Model):
+    pub_date = models.DateTimeField("Дата публикации", auto_now_add=True)
 
-class Review(models.Model):
+    class Meta:
+        abstract = True
+        ordering = ("-pub_date",)
+
+    def __str__(self):
+        return self.text[:MAX_TEXT_LENGTH]
+
+
+class Review(ReviewAndCommentsModel):
     title = models.ForeignKey(
         Title,
         on_delete=models.CASCADE,
@@ -69,7 +80,6 @@ class Review(models.Model):
         validators=[MinValueValidator(MIN_VALUE_REVIEW),
                     MaxValueValidator(MAX_VALUE_REVIEW)],
     )
-    pub_date = models.DateTimeField("Дата публикации", auto_now_add=True)
 
     class Meta:
         verbose_name = 'отзыв'
@@ -80,11 +90,8 @@ class Review(models.Model):
             )
         ]
 
-    def __str__(self):
-        return self.text[:MAX_TEXT_LENGTH]
 
-
-class Comment(models.Model):
+class Comment(ReviewAndCommentsModel):
     review = models.ForeignKey(
         Review, on_delete=models.CASCADE, related_name="comments"
     )
@@ -92,11 +99,7 @@ class Comment(models.Model):
     author = models.ForeignKey(
         User, on_delete=models.CASCADE, related_name="comments"
     )
-    pub_date = models.DateTimeField("Дата публикации", auto_now_add=True)
 
     class Meta:
         verbose_name = 'комментарий'
         verbose_name_plural = 'Комментарии'
-
-    def __str__(self):
-        return self.text[:MAX_TEXT_LENGTH]
