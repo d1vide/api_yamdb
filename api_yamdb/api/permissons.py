@@ -14,16 +14,16 @@ class AuthorAdminModeratorOrReadOnly(permissions.BasePermission):
                 or request.user.is_admin))
 
 
-class AdminOrReadOnly(permissions.BasePermission):
-
-    def has_permission(self, request, view):
-        return (request.method in permissions.SAFE_METHODS
-                or (request.user.is_authenticated and request.user.is_admin))
-
-
 class IsAdmin(permissions.BasePermission):
     """
     Доступ для администраторов и выше.
     """
     def has_permission(self, request, view):
         return request.user.is_authenticated and request.user.is_admin
+
+
+class AdminOrReadOnly(IsAdmin):
+
+    def has_permission(self, request, view):
+        return (request.method in permissions.SAFE_METHODS
+                or (super().has_permission(request, view)))

@@ -86,7 +86,7 @@ class Command(BaseCommand):
         elif options['titles']:
             self._import_table('reviews_title', 'titles', Title)
         elif options['genretitles']:
-            self._import_table('reviews_titlegenre', 'genre_title')
+            self._import_table('reviews_title_genre', 'genre_title')
         elif options['review']:
             self._import_table('reviews_review', 'review', Review)
         elif options['comments']:
@@ -96,6 +96,6 @@ class Command(BaseCommand):
             self._import_table('reviews_genre', 'genre')
             self._import_user()
             self._import_table('reviews_title', 'titles', Title)
-            self._import_table('reviews_titlegenre', 'genre_title')
+            self._import_table('reviews_title_genre', 'genre_title')
             self._import_table('reviews_review', 'review', Review)
             self._import_table('reviews_comment', 'comments', Comment)

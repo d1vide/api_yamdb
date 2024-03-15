@@ -1,3 +1,4 @@
+from django.db.models import Avg, IntegerField
 from django.conf import settings
 from django.contrib.auth.tokens import default_token_generator
 from django.core.mail import send_mail
@@ -9,10 +10,12 @@ from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.status import HTTP_200_OK, HTTP_400_BAD_REQUEST
 from rest_framework_simplejwt.tokens import AccessToken
+
 from reviews.models import Category, Genre, Review, Title
 from users.models import User
+
 from .filters import TitleFilter
-from .permissons import (AuthorAdminModeratorOrReadOnly, AdminOrReadOnly,
+from .permissons import (AdminOrReadOnly, AuthorAdminModeratorOrReadOnly,
                          IsAdmin)
 from .serializers import (CategorySerializer, CommentSerializer,
                           GenreSerializer, JWTSerializer, ReviewSerializer,
@@ -145,24 +148,12 @@ class GenreViewSet(ListCreateDestroyViewSet):
 
 
 class TitleViewSet(viewsets.ModelViewSet):
-    queryset = Title.objects.all()
+    queryset = Title.objects.all().annotate(
+        rating=Avg('reviews__score', output_field=IntegerField()))
     serializer_class = TitleSerializer
     permission_classes = (AdminOrReadOnly, )
     filter_class = TitleFilter
-
-    def update(self, request, *args, **kwargs):
-        partial = kwargs.pop('partial', False)
-        if partial:
-            instance = self.get_object()
-            serializer = self.get_serializer(instance,
-                                             data=request.data,
-                                             partial=partial)
-            serializer.is_valid(raise_exception=True)
-            self.perform_update(serializer)
-            return Response(serializer.data)
-        else:
-            return Response(data={"detail": "Method \"PUT\" not allowed."},
-                            status=status.HTTP_405_METHOD_NOT_ALLOWED)
+    http_method_names = ('get', 'post', 'patch', 'delete', )
 
 
 class ReviewViewSet(viewsets.ModelViewSet):

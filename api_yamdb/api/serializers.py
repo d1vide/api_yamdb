@@ -1,15 +1,17 @@
-from rest_framework import serializers
 from django.shortcuts import get_object_or_404
-from django.db.models import Avg, IntegerField
+from rest_framework import serializers
 
-from reviews.models import Category, Comment, Genre, Review, Title, TitleGenre
+from api.constants import MAX_LENGTH_EMAIL, MAX_LENGTH_NAME, ME
+from reviews.models import Category, Comment, Genre, Review, Title
 from users.models import User
 
 
 class UserSerializer(serializers.ModelSerializer):
     """Сериализатор модели User."""
-    email = serializers.EmailField(max_length=254, required=True)
-    username = serializers.SlugField(max_length=150, required=True)
+    email = serializers.EmailField(max_length=MAX_LENGTH_EMAIL, required=True)
+    username = serializers.SlugField(
+        max_length=MAX_LENGTH_NAME, required=True
+    )
 
     class Meta:
         fields = (
@@ -31,7 +33,7 @@ class UserSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError(
                 'Эта электронная почта уже занята.'
             )
-        if username == 'me':
+        if username == ME:
             raise serializers.ValidationError(
                 'Нельзя использовать "me" как имя.'
             )
@@ -56,26 +58,15 @@ class GenreSerializer(serializers.ModelSerializer):
         exclude = ('id',)
 
 
-class TitleGenreSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = TitleGenre
-        exclude = ('id',)
-
-
 class TitleGetSerializer(serializers.ModelSerializer):
     category = CategorySerializer(many=False, read_only=True)
     genre = GenreSerializer(many=True, read_only=True)
-    rating = serializers.SerializerMethodField()
+    rating = serializers.IntegerField(read_only=True)
 
     class Meta:
         model = Title
         fields = ('id', 'name', 'year', 'description', 'genre', 'category',
                   'rating')
-
-    def get_rating(self, obj):
-        rating = Review.objects.filter(title_id=obj.pk).aggregate(
-            Avg('score', output_field=IntegerField()))
-        return rating['score__avg']
 
 
 class TitleSerializer(serializers.ModelSerializer):
@@ -83,7 +74,8 @@ class TitleSerializer(serializers.ModelSerializer):
                                             queryset=Category.objects.all())
     genre = serializers.SlugRelatedField(slug_field='slug',
                                          queryset=Genre.objects.all(),
-                                         many=True)
+                                         many=True,
+                                         allow_null=False, allow_empty=False)
 
     def to_representation(self, instance):
         serializer = TitleGetSerializer(instance)
