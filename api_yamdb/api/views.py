@@ -1,3 +1,4 @@
+from django.db.models import Avg, IntegerField
 from django.conf import settings
 from django.contrib.auth.tokens import default_token_generator
 from django.core.mail import send_mail
@@ -146,7 +147,8 @@ class GenreViewSet(ListCreateDestroyViewSet):
 
 
 class TitleViewSet(viewsets.ModelViewSet):
-    queryset = Title.objects.all()
+    queryset = Title.objects.all().annotate(
+        rating=Avg('reviews__score', output_field=IntegerField()))
     serializer_class = TitleSerializer
     permission_classes = (AdminOrReadOnly, )
     filter_class = TitleFilter
