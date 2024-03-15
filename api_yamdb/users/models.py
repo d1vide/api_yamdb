@@ -1,4 +1,4 @@
-from api_yamdb.settings import (
+from api.constants import (
     MAX_LENGTH_EMAIL, MAX_LENGTH_NAME, MAX_LENGTH_ROLE
 )
 from django.contrib.auth.models import AbstractUser
@@ -54,5 +54,6 @@ class User(AbstractUser):
         )
     
     class Meta:
+        ordering = ('username',)
         verbose_name = 'Пользователь'
         verbose_name_plural = 'Пользователи'

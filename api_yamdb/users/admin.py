@@ -1,4 +1,4 @@
-from api_yamdb.settings import LIST_PAGE
+from api.constants import LIST_PAGE
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 
