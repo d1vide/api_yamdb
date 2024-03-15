@@ -1,15 +1,18 @@
-from rest_framework import serializers
-from django.shortcuts import get_object_or_404
 from django.db.models import Avg, IntegerField
+from django.shortcuts import get_object_or_404
+from rest_framework import serializers
 
+from api.constants import MAX_LENGTH_EMAIL, MAX_LENGTH_NAME, ME
 from reviews.models import Category, Comment, Genre, Review, Title
 from users.models import User
 
 
 class UserSerializer(serializers.ModelSerializer):
     """Сериализатор модели User."""
-    email = serializers.EmailField(max_length=254, required=True)
-    username = serializers.SlugField(max_length=150, required=True)
+    email = serializers.EmailField(max_length=MAX_LENGTH_EMAIL, required=True)
+    username = serializers.SlugField(
+        max_length=MAX_LENGTH_NAME, required=True
+    )
 
     class Meta:
         fields = (
@@ -31,7 +34,7 @@ class UserSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError(
                 'Эта электронная почта уже занята.'
             )
-        if username == 'me':
+        if username == ME:
             raise serializers.ValidationError(
                 'Нельзя использовать "me" как имя.'
             )
