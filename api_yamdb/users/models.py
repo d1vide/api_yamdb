@@ -52,7 +52,7 @@ class User(AbstractUser):
         return (
             self.role == Roles.MODERATOR
         )
-    
+
     class Meta:
         ordering = ('username',)
         verbose_name = 'Пользователь'
