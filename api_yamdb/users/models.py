@@ -1,9 +1,10 @@
-from api.constants import (
-    MAX_LENGTH_EMAIL, MAX_LENGTH_NAME, MAX_LENGTH_ROLE
-)
 from django.contrib.auth.models import AbstractUser
 from django.core.validators import EmailValidator, RegexValidator
 from django.db import models
+
+from api.constants import (
+    MAX_LENGTH_EMAIL, MAX_LENGTH_NAME, MAX_LENGTH_ROLE
+)
 
 
 class Roles(models.TextChoices):

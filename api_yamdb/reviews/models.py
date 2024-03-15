@@ -50,7 +50,7 @@ class Title(models.Model):
     def __str__(self):
         return self.name
 
- 
+
 class ReviewAndCommentsModel(models.Model):
     pub_date = models.DateTimeField("Дата публикации", auto_now_add=True)
 

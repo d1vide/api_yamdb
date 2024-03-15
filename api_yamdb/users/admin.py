@@ -1,7 +1,7 @@
-from api.constants import LIST_PAGE
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 
+from api.constants import LIST_PAGE
 from .models import User
 
 
